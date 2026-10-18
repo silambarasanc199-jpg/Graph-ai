@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GraphPath AI | Skill Path Planner</title>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#101e30;--line:#253b54;--blue:#4cc9ff;--text:#eef6ff;--muted:#a5b6ca}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,sans-serif}
+header,main,footer{max-width:960px;margin:auto;padding:20px}
+header{border-bottom:1px solid var(--line)}
+.logo{color:var(--blue);font-weight:800;letter-spacing:1px}
+h1{font-size:clamp(30px,7vw,48px);line-height:1.1;margin:24px 0 12px}
+p{color:var(--muted);line-height:1.65}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin:18px 0}
+label{display:block;margin:15px 0 7px}
+select,button{width:100%;padding:14px;border-radius:10px;font:inherit}
+select{background:#081524;color:var(--text);border:1px solid var(--line)}
+button{margin-top:18px;background:var(--blue);color:#04111e;border:0;font-weight:800;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:3px solid white;outline-offset:3px}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:30px;padding:7px 12px;color:var(--blue);font-size:13px}
+.node{padding:13px;margin:8px 0;border:1px solid #285475;border-radius:10px;background:#0b2438}
+.arrow{text-align:center;color:var(--blue)}
+.small{font-size:13px}
+a{color:var(--blue)}
+footer{border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">◈ GRAPHPATH AI</div>
+  <p class="small">Graph-powered skill planning</p>
+</header>
+<main>
+  <span class="pill">SKILL GRAPH EXPLORER</span>
+  <h1>Your skills.<br> Your next path.</h1>
+  <p>Explore how technical skills connect to career goals. This frontend preview uses an illustrative example until a real FalkorDB backend is connected.</p>
+
+  <section class="panel">
+    <h2>Plan a learning path</h2>
+    <label for="start">Your current skill</label>
+    <select id="start">
+      <option>Python</option>
+      <option>Statistics</option>
+      <option>Machine Learning</option>
+    </select>
+    <label for="target">Target career</label>
+    <select id="target">
+      <option>AI Engineer</option>
+      <option>Data Scientist</option>
+      <option>Backend Developer</option>
+    </select>
+    <button id="plan">Explore path</button>
+    <p id="status" role="status" aria-live="polite">Preview mode — no database connection.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Path visualization</h2>
+    <div id="result">
+      <div class="node">Python · Skill</div>
+      <div class="arrow">↓ prerequisite</div>
+      <div class="node">Statistics · Skill</div>
+      <div class="arrow">↓ prerequisite</div>
+      <div class="node">Machine Learning · Skill</div>
+      <div class="arrow">↓ prerequisite</div>
+      <div class="node">AI Engineer · Career role</div>
+    </div>
+    <p class="small">Illustrative graph only. Results are not retrieved from FalkorDB.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Graph model</h2>
+    <p><b>Nodes:</b> Skill, CareerRole</p>
+    <p><b>Relationship:</b> LEADS_TO</p>
+    <p><b>Planned engine:</b> FalkorDB + Cypher + FastAPI</p>
+  </section>
+</main>
+<footer>
+  <p class="small">GraphPath AI · Student learning-path prototype</p>
+</footer>
+<script>
+const paths = {
+  "Python|AI Engineer": ["Python","Statistics","Machine Learning","AI Engineer"],
+  "Statistics|AI Engineer": ["Statistics","Machine Learning","AI Engineer"],
+  "Machine Learning|AI Engineer": ["Machine Learning","AI Engineer"],
+  "Python|Data Scientist": ["Python","Statistics","Machine Learning","Data Scientist"],
+  "Statistics|Data Scientist": ["Statistics","Machine Learning","Data Scientist"],
+  "Machine Learning|Data Scientist": ["Machine Learning","Data Scientist"],
+  "Python|Backend Developer": ["Python","APIs","Backend Developer"],
+  "Statistics|Backend Developer": ["Statistics","Python","APIs","Backend Developer"],
+  "Machine Learning|Backend Developer": ["Machine Learning","Python","APIs","Backend Developer"]
+};
+
+document.getElementById("plan").addEventListener("click", () => {
+  const start = document.getElementById("start").value;
+  const target = document.getElementById("target").value;
+  const key = start + "|" + target;
+  const path = paths[key] || [start,target];
+  const result = document.getElementById("result");
+  result.replaceChildren();
+
+  path.forEach((name,index) => {
+    const node = document.createElement("div");
+    node.className = "node";
+    node.textContent = name;
+    result.appendChild(node);
+
+    if(index < path.length - 1) {
+      const arrow = document.createElement("div");
+      arrow.className = "arrow";
+      arrow.textContent = "↓ planned relationship";
+      result.appendChild(arrow);
+    }
+  });
+
+  document.getElementById("status").textContent =
+    "Preview generated locally. This is illustrative data, not a FalkorDB query.";
+});
+</script>
+</body>
+</html>
